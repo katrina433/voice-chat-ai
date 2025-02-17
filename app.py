@@ -11,6 +11,8 @@ from PIL import ImageGrab
 from dotenv import load_dotenv
 from openai import OpenAI, OpenAIError
 from faster_whisper import WhisperModel
+from TTS.tts.configs.xtts_config import XttsConfig
+from TTS.tts.models.xtts import Xtts
 from textblob import TextBlob
 from pathlib import Path
 import re
@@ -56,6 +58,17 @@ project_dir = os.path.dirname(os.path.abspath(__file__))
 character_folder = os.path.join(project_dir, "characters", CHARACTER_NAME)
 character_prompt_file = os.path.join(character_folder, f"{CHARACTER_NAME}.txt")
 character_audio_file = os.path.join(character_folder, f"{CHARACTER_NAME}.wav")
+
+# Load XTTS configuration
+xtts_config_path = os.path.join(project_dir, "XTTS-v2", "config.json")
+xtts_checkpoint_dir = os.path.join(project_dir, "XTTS-v2")
+
+xtts_config = XttsConfig()
+xtts_config.load_json(xtts_config_path)
+
+# Initialize XTTS model
+xtts_model = Xtts.init_from_config(xtts_config)
+xtts_model.load_checkpoint(xtts_config, checkpoint_dir=xtts_checkpoint_dir, eval=True)
 
 output_dir = os.path.join(project_dir, 'outputs')
 os.makedirs(output_dir, exist_ok=True)
